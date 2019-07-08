@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆成功</title>
+    <script src="../static/js/jquery-3.4.1.min.js"></script>
+    <script>
+
+
+        $(function () {
+
+            var value = window.name;
+            var unSpan = $("#unSpan");
+            unSpan.css('color','blue');
+            unSpan.html(value);
+
+            $.get("http://localhost:8080/user/getUserInfo",{username:value} ,function (data) {
+                var age = $("#age");
+                var gender = $("#gender");
+
+                age.html(data.age);
+                gender.html(data.gender);
+
+            }, "json");
+
+        });
+    </script>
+
+</head>
+<body>
+用户：<span id="unSpan"></span>您好
+<div align="right">
+    <a href="deleteUser.html">注销用户</a>
+    <a href="changePassword.html">修改密码</a><br>
+    <a href="index_solo.html">返回首页</a>
+
+</div>
+<h3>您的信息</h3>
+<div align="center">
+    年龄:<span id="age"></span><br>
+    性别:<span id="gender"></span><br>
+</div>
+</body>
+</html>

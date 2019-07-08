@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>register</title>
+    <script src="../static/js/jquery-3.4.1.min.js"></script>
+    <style>
+        #username, #password, #age{
+            width: 250px;
+            height: 30px;
+            border: 1px solid lavenderblush;
+            border-radius: 5px;
+            padding-left: 5px;
+        }
+    </style>
+    <script>
+        //检查是否符合注册要求
+        function checkUsername() {
+            var username = $("#username").val();
+            var ufSpan = $("#usernameFlag");
+            var reg_username = /^\w{6,15}$/;
+            var flag = reg_username.test(username);
+            if (flag) {
+                //return checkUsernameExist(username);
+                return checkUsernameExist(username);
+            } else {
+                ufSpan.css("color", "red");
+                ufSpan.html("用户名要求为6-15位英文数字组合");
+                return false;
+            }
+        }
+
+        //检查是否存在
+        function checkUsernameExist(username) {
+            var flag = false;
+            $.ajaxSettings.async = false;
+            $.get("http://localhost:8080/user/checkName", {username: username}, function (data) {
+                var ufSpan = $("#usernameFlag");
+                if (data.userExist) {
+                    ufSpan.css("color", "red");
+                    ufSpan.html("用户名存在，请更换");
+                } else {
+                    ufSpan.css("color", "green");
+                    ufSpan.html("用户名可用，请继续");
+                    flag = true;
+                }
+            }, "json");
+            return flag;
+        }
+
+        //检查密码是否符合要求
+        function checkPassword() {
+            var password = $("#password").val();
+            var pwSpan = $("#passwordFlag");
+            var reg_username = /^\w{6,15}$/;
+            var flag = reg_username.test(password);
+            if (flag) {
+                pwSpan.css("color", "green");
+                pwSpan.html("密码可用，请继续");
+                return true;
+            } else {
+                pwSpan.css("color", "red");
+                pwSpan.html("密码要求为6-15位英文数字组合");
+                return false;
+            }
+        }
+
+        //在页面加载完成之后
+        $(function () {
+            $("#resgisterForm").submit(function () {
+                if (checkUsername() && checkPassword()) {
+                    $.post("http://localhost:8080/user/register", $(this).serialize(), function (data) {
+                        if (data.reg_success) {
+                            location.href = "success_solo.html";
+                        }
+                    }, "json");
+                }
+                return false;
+            });
+            $("#username").blur(checkUsername);
+            $("#password").blur(checkPassword);
+        });
+    </script>
+</head>
+<body>
+<h1 align="center">新用户注册</h1><div align="right"><a href="index_solo.html">返回首页</a></div>
+<div align="center">
+    <form id="resgisterForm">
+        <br>
+        <input type="text" id="username" name="username" placeholder="输入用户名"><br>
+        <span id="usernameFlag"></span><br>
+        <input type="text" id="password" name="password" placeholder="输入密码"><br>
+        <span id="passwordFlag"></span><br>
+        <input type="text" id="age" name="age" placeholder="输入年龄"><br>
+        性别：<input type="radio" name="gender" value="男" checked> 男
+        <input type="radio" name="gender" value="女"> 女
+        <br>
+        <input type="submit" value="点击注册">
+    </form>
+    <div class="rg_right">
+        <p>已有账号?<a href="login_solo.html">立即登陆</a></p>
+    </div>
+</div>
+</body>
+</html>
+

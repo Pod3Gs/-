@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员</title>
+    <script src="../static/js/jquery-3.4.1.min.js"></script>
+    <style>
+        #page, #size {
+            text-align: center;
+            width: 20px;
+        }
+
+        #infoDiv {
+            text-align: center;
+            margin: 50px;
+        }
+
+        table {
+            width: 500px;
+            border: 2px solid black;
+
+        }
+
+        th, td {
+            border: 1px solid black;
+            margin: auto;
+        }
+    </style>
+    <script>
+
+
+        function getMessage(){
+
+            $.ajaxSettings.async = false;
+            $.get("http://localhost:8080/user/getMessage", function (data) {
+
+                if (data.message!=null) {
+                    var s = data.message.toString();
+                    var td_s = document.createElement("td");
+                    var text_td_s = document.createTextNode(s);
+                    td_s.appendChild(text_td_s);
+                    var tr = document.createElement("tr");
+                    tr.appendChild(td_s);
+                    var tbd = document.getElementsByTagName("tbody")[1];
+                    tbd.appendChild(tr);
+                }
+
+            }, "json");
+        }
+
+
+        $(function () {
+            var Span = $("#usernameFlag");
+            var value = window.name;
+            var unSpan = $("#unSpan");
+            unSpan.css('color', 'blue');
+            unSpan.html(value);
+            getMessage();
+
+            setInterval(getMessage,1000);
+
+            $.get("http://localhost:8080/user/getUserListInfo", function (data) {
+                Span.css("color", "green");
+                Span.html("共有" + data.totalElements + "条信息");
+
+            }, "json");
+
+            $("#form").submit(function () {
+                $("#table").html("");
+                $.ajaxSettings.async = false;
+                $.get("http://localhost:8080/user/getAllUsersByPage", $(this).serialize(), function (data) {
+
+                    var i = 0;
+                    var data = data.content;
+                    while (data[i]) {
+                        var id = data[i].id;
+                        var name = data[i].username;
+                        var age = data[i].age;
+                        var gender = data[i].gender;
+
+                        var td_id = document.createElement("td");
+                        var text_td_id = document.createTextNode(id);
+                        td_id.appendChild(text_td_id);
+
+                        var td_name = document.createElement("td");
+                        var text_td_name = document.createTextNode(name);
+                        td_name.appendChild(text_td_name);
+
+                        var td_age = document.createElement("td");
+                        var text_td_age = document.createTextNode(age);
+                        td_age.appendChild(text_td_age);
+
+
+                        var td_gender = document.createElement("td");
+                        var text_td_gender = document.createTextNode(gender);
+                        td_gender.appendChild(text_td_gender);
+
+                        var tr = document.createElement("tr");
+
+                        tr.appendChild(td_id);
+                        tr.appendChild(td_name);
+                        tr.appendChild(td_age);
+                        tr.appendChild(td_gender);
+
+
+                        var tbd = document.getElementsByTagName("tbody")[0];
+                        tbd.appendChild(tr);
+
+                        i++;
+
+                    }
+                }, "json");
+
+
+
+
+                return false;
+            });
+
+
+        });
+
+    </script>
+
+</head>
+<body>
+管理员：<span id="unSpan"></span>您好
+<div align="right"><a href="index_solo.html">返回首页</a></div>
+<div align="center" id="infoDiv">
+    <h1>信息查询</h1>
+    <span id="usernameFlag"></span><br>
+
+    <p>请输入您要查询的页码</p>
+    <form id="form">
+        <br>
+        每页显示<input type="text" id="size" name="size">条，
+        第<input type="text" id="page" name="page">页
+        <input type="submit" value="查询"><br>
+    </form>
+    <h3>以下为所有用户信息</h3>
+    <table align="center">
+        <thead>
+        <tr>
+            <th width="80px">库内编号</th>
+            <th>用户名</th>
+            <th width="80px">年龄</th>
+            <th width="80px">性别</th>
+        </tr>
+        </thead>
+        <tbody id="table">
+        <tr>
+        </tr>
+
+        </tbody>
+    </table>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <table align="center">
+        <thead>
+        <tr>
+            最新用户动态
+        </tr>
+        </thead>
+        <tbody id="table2">
+        <tr>
+        </tr>
+
+        </tbody>
+    </table>
+
+
+</div>
+</body>
+</html>
